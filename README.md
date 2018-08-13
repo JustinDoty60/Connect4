@@ -1,5 +1,5 @@
 # Connect4
-Connect 4 game created using java.net API from Java core library
+Connect 4 game created using java.net API from Java core library. Multiple clients can play on local network together!
 
 Make sure the client port matches the server port when connecting!
 
