@@ -702,7 +702,7 @@ public class LobbyGUI extends javax.swing.JFrame {
     }}; 
     
     private void initSong() {
-        songFile = new Media(new File("audio\\lobby.mp3").toURI().toString());
+        songFile = new Media(new File("src\\audio\\lobby.mp3").toURI().toString());
         backgroundPlayer = new MediaPlayer(songFile);
         backgroundPlayer.setVolume(.1);
         backgroundPlayer.setCycleCount(MediaPlayer.INDEFINITE);
