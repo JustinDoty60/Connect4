@@ -34,7 +34,7 @@ public class Connect4Server extends Thread {
     }
     
     @Override
-    public void run() { //Waits/Receives packet from client and processes message
+    public void run() { //Waits for and processes packets from clients
         try {
             while(running) {
                 getClientPacket();
@@ -54,12 +54,12 @@ public class Connect4Server extends Thread {
     /******************************Start Common Code**********************************/
     /*********************************************************************************/
     
-    private void checkCommonPacket() throws IOException {
+    private void checkCommonPacket() throws IOException { //Checks whether an incoming packet is a common packet, if so it is processes
         if(clientResponse.equals("LEAVE"))
             terminatePlayer();
     }
     
-    private void terminatePlayer() throws IOException {
+    private void terminatePlayer() throws IOException { //Terminates player references in server and sends an updated list to all clients
         removePlayerThread();
         numPlayers--;
         running = false;
@@ -69,7 +69,7 @@ public class Connect4Server extends Thread {
         updateLobbyLists();
     }
     
-    private void removePlayerThread() {
+    private void removePlayerThread() { //Terminates the player's thread from the server's client list
         List<Connect4Server> list = playerThreads;
         for(Iterator<Connect4Server> iter = list.iterator(); iter.hasNext();) {
             Connect4Server temp = iter.next();
@@ -80,7 +80,7 @@ public class Connect4Server extends Thread {
         }
     }
     
-    private void updateLobbyLists() throws IOException { //Sends current players list to all players
+    private void updateLobbyLists() throws IOException { //Sends current players list to all clients
         HashMap<Integer, String> playerList = new HashMap<>();
         for(Connect4Server currPlayerThread: playerThreads)
             playerList.put(currPlayerThread.player.getID(), currPlayerThread.player.getName());
@@ -91,12 +91,12 @@ public class Connect4Server extends Thread {
         }
     }
     
-    private static void sendMessage(Player source, Object message) throws IOException {
+    private static void sendMessage(Player source, Object message) throws IOException { //Sends a message to a specific client
         source.getOut().writeObject(message);
         source.getOut().reset();
     }
     
-    private void sendSimpleResponse(Player player, String message) throws IOException {
+    private void sendSimpleResponse(Player player, String message) throws IOException { //Sends a message to a specific client to a client's thread
         for(Connect4Server currPlayerThread: playerThreads) {
             if(currPlayerThread.player.getID() == player.getID()) {
                 sendMessage(currPlayerThread.player, message);
@@ -105,15 +105,15 @@ public class Connect4Server extends Thread {
         }
     }
     
-    private void sendStatusResponse(String message) throws IOException, ClassNotFoundException {
+    private void sendStatusResponse(String message) throws IOException, ClassNotFoundException { //Sends a busy or not busy status message to a specific client 
         sendSimpleResponse(player, message + opponent.getName() );
     }
     
-    private synchronized void getClientPacket() throws IOException, ClassNotFoundException {
+    private synchronized void getClientPacket() throws IOException, ClassNotFoundException { //Waits for a client's reponse and takes it in as a String
         clientResponse = (String) player.getIn().readObject();
     }
     
-    private void resetBoard() {
+    private void resetBoard() { //Resets the game's board to all NULL 
         chipsPlayed = 0;
         
         for(int i = 0; i < 6; i++) {
@@ -130,7 +130,7 @@ public class Connect4Server extends Thread {
     /******************************Start Lobby Code***********************************/
     /*********************************************************************************/
     
-    private void checkLobbyPacket() throws IOException, ClassNotFoundException {
+    private void checkLobbyPacket() throws IOException, ClassNotFoundException { //Checks whether an incoming packet is a lobby packet, if so it is processes
         if(clientResponse.startsWith("SET_NAME"))
             determineValidName();
         else if(clientResponse.startsWith("REQUEST"))
@@ -143,12 +143,12 @@ public class Connect4Server extends Thread {
             sendStatusResponse("BUSY");
     }
     
-    private void determineOpponent(String opponentName) {
+    private void determineOpponent(String opponentName) { //Determines what the client's opponent's name is
             opponent = getOpponentThread(opponentName).player;
             opponent.setName(opponentName);
     }
     
-    private Connect4Server getOpponentThread(String opponentName) { //Returns opponent Thread for communication purposes
+    private Connect4Server getOpponentThread(String opponentName) { //Returns opponent's Thread for communication purposes
         for(Connect4Server possibleOpponent: playerThreads) {
             if(possibleOpponent.player.getName().equals(opponentName))
                 return possibleOpponent;
@@ -156,7 +156,7 @@ public class Connect4Server extends Thread {
         return null;
     }
     
-    private Connect4Server getOpponentThread() { //Returns opponent Thread for communication purposes
+    private Connect4Server getOpponentThread() { //Returns opponent's Thread for communication purposes
         for(Connect4Server possibleOpponent: playerThreads) {
             if(possibleOpponent.player.equals(opponent))
                 return possibleOpponent;
@@ -164,7 +164,7 @@ public class Connect4Server extends Thread {
         return null;
     }
     
-    private void determineValidName() throws IOException {
+    private void determineValidName() throws IOException { //Determines whether the client's given name is a valid name
         if(isLobbyFull()) return;
         
         String name = clientResponse.substring(8,clientResponse.length());
@@ -178,13 +178,13 @@ public class Connect4Server extends Thread {
             sendMessage(player, "BAD_NAME");
     }
     
-    private void sendName() throws IOException {
+    private void sendName() throws IOException { //Sends a packet to the client with their assigned valid name
         sendMessage(player, "SET_NAME" + player.getName());
 
         System.out.println(player.getName() + " joined the server");
     }
     
-    private void processGameRequest() throws IOException {
+    private void processGameRequest() throws IOException { //Checks whether the client's opponent is busy. If they are, a busy message is sent. If not, a request message is sent to the opponent
         String opponentName = clientResponse.substring(7, clientResponse.length());
         determineOpponent(opponentName);
         
@@ -202,7 +202,7 @@ public class Connect4Server extends Thread {
         sendMessage(player, "BUSY" + opponent.getName());
     }
     
-    private void initGame() throws IOException {System.out.println("Initializing Game between " + player.getName() + " and " + opponent.getName());
+    private void initGame() throws IOException {System.out.println("Initializing Game between " + player.getName() + " and " + opponent.getName()); //Sends an indicator message to opponent to trigger game GUI, then inits game variables
         
         sendMessage(opponent, "ACCEPTED_REQUEST" + player.getName());
 
@@ -214,14 +214,14 @@ public class Connect4Server extends Thread {
         determineInitTurn();
     }
     
-    private void determineInitTurn() throws IOException {
+    private void determineInitTurn() throws IOException { //Determines the initial turn in a game
         if(Math.random() > .5) 
             sendInitTurn("INITIALIZE_GAME0", "INITIALIZE_GAME1");
         else
             sendInitTurn("INITIALIZE_GAME1", "INITIALIZE_GAME0");
     }
     
-    private void sendInitTurn(String opponentMessage, String playerMessage) throws IOException {
+    private void sendInitTurn(String opponentMessage, String playerMessage) throws IOException { //Sends a message to both players in a game to set the initial turn
         sendMessage(opponent, opponentMessage + player.getName());
         sendMessage(player, playerMessage + opponent.getName());
     }
@@ -252,7 +252,7 @@ public class Connect4Server extends Thread {
     /******************************Start Game Code***********************************/
     /********************************************************************************/
     
-    private void checkGamePacket() throws IOException, InterruptedException {
+    private void checkGamePacket() throws IOException, InterruptedException { //Checks whether an incoming packet is a game packet, if so it is processes
         if(clientResponse.startsWith("MOVE")) 
             processMove();
         else if(clientResponse.startsWith("REMATCH"))
@@ -439,14 +439,14 @@ public class Connect4Server extends Thread {
     /******************************Start Main Code***********************************/
     /********************************************************************************/
     
-    private static void checkPortNum(String[] portNum) {
+    private static void checkPortNum(String[] portNum) { //Checks whether the args provided are valid
         if(portNum.length != 1) {
             System.out.println("Port number is required, exiting");
             System.exit(-1);
         }
     }
     
-    private static void acceptClients(ServerSocket serverJoinSocket) throws IOException {
+    private static void acceptClients(ServerSocket serverJoinSocket) throws IOException { //Waits and accepts clients and initalizes them
         while(true) {
             Socket clientSocket = serverJoinSocket.accept();
             
@@ -454,7 +454,7 @@ public class Connect4Server extends Thread {
         }
     }
     
-    private static void initNewPlayer(Socket clientSocket) throws IOException {
+    private static void initNewPlayer(Socket clientSocket) throws IOException { //Creates a new thread in the server for the new client and sends a message to client with their initial name and ID
         Player newPlayer = new Player(clientSocket);
         sendMessage(newPlayer, newPlayer.getName());
         sendMessage(newPlayer, newPlayer.getID());
