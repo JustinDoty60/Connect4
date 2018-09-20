@@ -15,4 +15,5 @@ Connect 4 game created using java.net API from Java core library. Multiple clien
 2) Type "cd Desktop/Connect4-master/Connect4Client/dist", then press enter
 3) Type "java -jar Connect4Client.jar", then press enter
 4) If a GUI pops up telling you to enter your name, you are good to go!
+
 For multiple clients(players), repeat these steps!!!
