@@ -20,6 +20,6 @@ Connect 4 game created using java.net API from Java core library. Multiple clien
 **How it works**
 Players are first prompted to give their display name. Once they select a name, 
 they will be brought into the lobby area where they can invite other non-busy 
-players, player's that are not in a game currently, to play a game of Connect 4.
+players, players that are not in a game currently, to play a game of Connect 4.
 Invites can be declined and accepted and players have the option to rematch one
 another after a game. I hope you enjoy! Thanks for playing.
