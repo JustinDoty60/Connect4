@@ -1,11 +1,19 @@
 # Connect4
-**PLEASE RUN IN NETBEANS IDE**
-*Support for running outside Netbeans is coming soon*
-
 Connect 4 game created using java.net API from Java core library. Multiple clients can play on local network together!
 
-Make sure the client port matches the server port when connecting! (5936)
+**Extract Files**
+1) Extract download onto _Desktop_
 
-1) Run Server .java file
+**Run Server(Windows)**
+1) Open command prompt
+2) type "cd Desktop/Connect4-master/Connect4Server/dist", then press enter
+3) type "java -jar Connect4Server.jar 5936", then press enter
+4) If "Server is running..." message is visible, you are good to go!
 
-2) Run multiple Client .java files in order to play against one another
+**Run Client(Windows)**
+1) Open command prompt
+2) type "cd Desktop/Connect4-master/Connect4Client/dist", then press enter
+3) type "java -jar Connect4Client.jar", then press enter
+4) If a GUI pops up telling you to enter your name, you are good to go!
+-For multiple clients(players), repeat these steps!!!
+
